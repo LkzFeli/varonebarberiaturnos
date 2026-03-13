@@ -1,819 +1,394 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Turnos · Barbería El Clásico</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-<style>
-/* ── VARIABLES ───────────────────────────────────────────── */
-:root {
-  --ink:     #0e0e0e;
-  --paper:   #f5f0e8;
-  --cream:   #ede8dc;
-  --gold:    #c8a96e;
-  --gold-dk: #a8894e;
-  --red:     #c0392b;
-  --green:   #1a7a4a;
-  --grey:    #888;
-  --radius:  6px;
-  --shadow:  0 4px 24px rgba(0,0,0,.10);
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RobloxD — CCU Engineering</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --rbx-red: #E8384D;
+            --bg: #050505;
+            --card: #0f0f0f;
+            --border: rgba(255,255,255,0.07);
+        }
 
-/* ── RESET / BASE ────────────────────────────────────────── */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { font-size: 16px; }
-body {
-  background: var(--paper);
-  color: var(--ink);
-  font-family: 'DM Sans', sans-serif;
-  font-weight: 400;
-  min-height: 100vh;
-  overflow-x: hidden;
-}
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg);
+            color: #f4f4f5;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+        }
 
-/* ── HEADER ──────────────────────────────────────────────── */
-header {
-  background: var(--ink);
-  color: var(--gold);
-  padding: 28px 32px 22px;
-  display: flex;
-  align-items: flex-end;
-  gap: 16px;
-  border-bottom: 3px solid var(--gold);
-}
-.header-icon {
-  font-size: 2.4rem;
-  line-height: 1;
-}
-.header-text h1 {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: clamp(2rem, 5vw, 3.2rem);
-  letter-spacing: 0.05em;
-  line-height: 1;
-  color: var(--gold);
-}
-.header-text p {
-  font-size: .85rem;
-  color: #aaa;
-  margin-top: 4px;
-  letter-spacing: .04em;
-}
+        /* UI Dinámica */
+        .glass-header {
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+        }
 
-/* ── LAYOUT ──────────────────────────────────────────────── */
-main {
-  max-width: 680px;
-  margin: 0 auto;
-  padding: 32px 16px 64px;
-}
+        .game-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 28px;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+            position: relative;
+            overflow: hidden;
+        }
 
-/* ── CARD ────────────────────────────────────────────────── */
-.card {
-  background: #fff;
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  padding: 28px;
-  margin-bottom: 24px;
-  border: 1px solid #e4ddd1;
-}
-.card-title {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.35rem;
-  letter-spacing: .06em;
-  color: var(--ink);
-  margin-bottom: 18px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.card-title span { font-size: 1.2rem; }
+        .game-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--rbx-red);
+            box-shadow: 0 25px 50px -12px rgba(232, 56, 77, 0.2);
+        }
 
-/* ── FORMULARIO ──────────────────────────────────────────── */
-.field { margin-bottom: 18px; }
-label {
-  display: block;
-  font-size: .82rem;
-  font-weight: 600;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: var(--grey);
-  margin-bottom: 6px;
-}
-input[type="text"],
-input[type="tel"],
-input[type="date"] {
-  width: 100%;
-  padding: 12px 14px;
-  border: 1.5px solid #d8d0c4;
-  border-radius: var(--radius);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 1rem;
-  background: var(--paper);
-  color: var(--ink);
-  transition: border-color .2s;
-  outline: none;
-  -webkit-appearance: none;
-}
-input:focus {
-  border-color: var(--gold);
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(200,169,110,.15);
-}
-input::placeholder { color: #bbb; }
+        /* Vistas */
+        .view { display: none; opacity: 0; transform: translateY(15px); transition: all 0.5s ease; }
+        .view.active { display: block; opacity: 1; transform: translateY(0); }
 
-/* ── SELECTOR DE FECHA ───────────────────────────────────── */
-.date-nav {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.date-nav input[type="date"] { flex: 1; }
-.btn-nav {
-  background: var(--ink);
-  color: var(--gold);
-  border: none;
-  border-radius: var(--radius);
-  width: 40px;
-  height: 44px;
-  font-size: 1.2rem;
-  cursor: pointer;
-  transition: background .15s;
-  flex-shrink: 0;
-}
-.btn-nav:hover { background: #333; }
+        /* Skeletons Animados */
+        .shimmer {
+            background: linear-gradient(90deg, #111 25%, #1d1d1d 50%, #111 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite linear;
+        }
+        @keyframes loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
-/* ── GRILLA DE SLOTS ─────────────────────────────────────── */
-#slots-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  gap: 10px;
-  min-height: 80px;
-}
-.slot-btn {
-  background: var(--cream);
-  border: 2px solid transparent;
-  border-radius: var(--radius);
-  padding: 12px 6px;
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.1rem;
-  letter-spacing: .04em;
-  cursor: pointer;
-  transition: all .18s;
-  text-align: center;
-  color: var(--ink);
-  position: relative;
-}
-.slot-btn:hover:not(:disabled) {
-  background: var(--gold);
-  color: #fff;
-  border-color: var(--gold-dk);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(200,169,110,.35);
-}
-.slot-btn.selected {
-  background: var(--ink);
-  color: var(--gold);
-  border-color: var(--gold);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 14px rgba(0,0,0,.2);
-}
-.slot-btn:disabled {
-  background: #f0ebe3;
-  color: #ccc;
-  cursor: not-allowed;
-  text-decoration: line-through;
-  font-size: .85rem;
-  font-family: 'DM Sans', sans-serif;
-}
-.slot-btn:disabled::after {
-  content: "●";
-  display: block;
-  font-size: .6rem;
-  color: var(--red);
-  margin-top: 2px;
-  text-decoration: none;
-}
+        /* Consola de Logs */
+        #terminal {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%; height: 35px;
+            background: #000; color: #0f0;
+            font-family: 'Courier New', monospace; font-size: 11px;
+            padding: 8px 20px; border-top: 1px solid var(--border);
+            z-index: 2000; transition: height 0.3s ease; cursor: pointer;
+        }
+        #terminal.open { height: 180px; overflow-y: auto; }
 
-/* ── SKELETON LOADER ─────────────────────────────────────── */
-.skeleton {
-  border-radius: var(--radius);
-  background: linear-gradient(90deg, #ede8dc 25%, #e4ddd1 50%, #ede8dc 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.4s infinite;
-  height: 52px;
-}
-@keyframes shimmer {
-  0%   { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
+        /* Estrellas */
+        .stars span { cursor: pointer; transition: 0.2s; font-size: 1.8rem; color: #222; }
+        .stars .active { color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
 
-/* ── BOTÓN PRINCIPAL ─────────────────────────────────────── */
-.btn-primary {
-  width: 100%;
-  padding: 16px;
-  background: var(--gold);
-  color: var(--ink);
-  border: none;
-  border-radius: var(--radius);
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 1.25rem;
-  letter-spacing: .08em;
-  cursor: pointer;
-  transition: all .2s;
-  margin-top: 6px;
-  position: relative;
-  overflow: hidden;
-}
-.btn-primary:hover:not(:disabled) {
-  background: var(--gold-dk);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(200,169,110,.4);
-}
-.btn-primary:disabled {
-  opacity: .55;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-.btn-primary .spinner {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  border: 3px solid rgba(0,0,0,.25);
-  border-top-color: var(--ink);
-  border-radius: 50%;
-  animation: spin .7s linear infinite;
-  vertical-align: middle;
-  margin-right: 8px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── MENSAJES ────────────────────────────────────────────── */
-.alert {
-  padding: 14px 18px;
-  border-radius: var(--radius);
-  font-size: .92rem;
-  font-weight: 500;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  line-height: 1.5;
-}
-.alert-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 1px; }
-.alert-error   { background: #fdecea; color: #8b1a12; border: 1px solid #f5c6c2; }
-.alert-success { background: #e8f8ef; color: #0f5132; border: 1px solid #b7e1cb; }
-.alert-warn    { background: #fff8e1; color: #7a5e0a; border: 1px solid #ffe082; }
-.alert-info    { background: #e8f4fd; color: #0c5460; border: 1px solid #b8daff; }
-
-/* ── RESUMEN DEL TURNO ───────────────────────────────────── */
-#resumen {
-  display: none;
-  animation: fadeUp .35s ease;
-}
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.resumen-tabla {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 16px 0;
-}
-.resumen-tabla td {
-  padding: 10px 12px;
-  border-bottom: 1px solid #ede8dc;
-  font-size: .92rem;
-}
-.resumen-tabla td:first-child {
-  font-weight: 600;
-  color: var(--grey);
-  text-transform: uppercase;
-  font-size: .78rem;
-  letter-spacing: .05em;
-  width: 40%;
-}
-.badge {
-  display: inline-block;
-  padding: 3px 10px;
-  border-radius: 20px;
-  font-size: .78rem;
-  font-weight: 600;
-  letter-spacing: .04em;
-}
-.badge-pending { background: #fff8e1; color: #7a5e0a; border: 1px solid #ffe082; }
-
-/* ── LINK WHATSAPP ───────────────────────────────────────── */
-.wa-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  width: 100%;
-  padding: 15px;
-  background: #25d366;
-  color: #fff;
-  border: none;
-  border-radius: var(--radius);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background .2s, transform .2s;
-  margin-top: 12px;
-}
-.wa-btn:hover {
-  background: #1ebd5b;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(37,211,102,.35);
-}
-.wa-btn svg { flex-shrink: 0; }
-
-/* ── INDICADOR TIEMPO REAL ───────────────────────────────── */
-.live-indicator {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: .78rem;
-  color: var(--grey);
-  margin-bottom: 14px;
-}
-.live-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--green);
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: .3; }
-}
-.live-dot.loading { background: var(--gold); }
-.live-dot.error   { background: var(--red); animation: none; }
-
-/* ── FOOTER ──────────────────────────────────────────────── */
-footer {
-  text-align: center;
-  padding: 24px;
-  font-size: .78rem;
-  color: #aaa;
-  border-top: 1px solid #e4ddd1;
-}
-footer a { color: var(--gold-dk); }
-
-/* ── RESPONSIVE ──────────────────────────────────────────── */
-@media (max-width: 420px) {
-  header { padding: 20px 16px 16px; }
-  .card  { padding: 20px 16px; }
-  #slots-container { grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
-}
-</style>
+        .btn-primary {
+            background: var(--rbx-red);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            filter: brightness(1.2);
+            transform: scale(1.03);
+            box-shadow: 0 10px 20px rgba(232, 56, 77, 0.3);
+        }
+    </style>
 </head>
-<body>
+<body class="pb-20">
 
-<!-- ╔═══════════════════════════════════════════╗ -->
-<!-- ║               HEADER                     ║ -->
-<!-- ╚═══════════════════════════════════════════╝ -->
-<header>
-  <div class="header-icon">✂️</div>
-  <div class="header-text">
-    <h1 id="nombre-negocio">Barbería El Clásico</h1>
-    <p>Sistema de turnos online · 100% en tiempo real</p>
-  </div>
-</header>
+    <header class="glass-header fixed top-0 w-full">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <h1 class="text-2xl font-800 tracking-tighter cursor-pointer" onclick="Router.go('home')">
+                ROBLOX<span class="text-[#E8384D]">D</span>
+            </h1>
 
-<main>
+            <div class="flex-1 max-w-xl mx-10 relative">
+                <input type="text" id="searchInput" onkeypress="if(event.key==='Enter') App.search(this.value)"
+                    placeholder="Buscar en la base de datos de CCUCheck..." 
+                    class="w-full bg-white/5 border border-white/10 rounded-2xl py-2.5 px-6 text-sm focus:outline-none focus:border-[#E8384D] transition">
+            </div>
 
-  <!-- ── ALERTA GLOBAL (errores de red, etc.) ── -->
-  <div id="alerta-global" style="display:none; margin-bottom:16px;"></div>
+            <nav class="flex items-center gap-6">
+                <button onclick="Router.go('profile')" class="text-sm font-bold hover:text-[#E8384D] transition">Mi Perfil</button>
+                <div class="w-10 h-10 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center font-bold text-xs">SF</div>
+            </nav>
+        </div>
+    </header>
 
-  <!-- ══════════════════════════════════════════
-       PASO 1: DATOS DEL CLIENTE
-  ══════════════════════════════════════════ -->
-  <section id="paso-1" class="card">
-    <div class="card-title"><span>👤</span> Tus datos</div>
+    <main class="pt-32 px-6 max-w-7xl mx-auto">
+        
+        <section id="view-home" class="view active">
+            <div class="flex justify-between items-end mb-10">
+                <div>
+                    <h2 class="text-4xl font-800 tracking-tighter">Explorar Experiencias</h2>
+                    <p class="text-zinc-500 text-sm mt-1 font-medium">Análisis de CCU y métricas de rendimiento.</p>
+                </div>
+                <div id="status-indicator" class="flex items-center gap-2 bg-zinc-900 px-3 py-1.5 rounded-full border border-white/5">
+                    <div class="w-2 h-2 rounded-full bg-yellow-500" id="dot"></div>
+                    <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400" id="status-text">Iniciando...</span>
+                </div>
+            </div>
 
-    <div class="field">
-      <label for="cliente">Nombre completo</label>
-      <input type="text" id="cliente" placeholder="Ej: Juan Pérez" maxlength="60" autocomplete="given-name"/>
+            <div id="grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8">
+                </div>
+        </section>
+
+        <section id="view-detail" class="view">
+            <div id="detail-container"></div>
+        </section>
+
+        <section id="view-profile" class="view">
+            <div class="grid lg:grid-cols-3 gap-10">
+                <div class="lg:col-span-1 space-y-6">
+                    <div class="game-card p-10 text-center">
+                        <div class="w-24 h-24 bg-[#E8384D]/10 text-[#E8384D] rounded-[2rem] mx-auto mb-6 flex items-center justify-center text-3xl font-black">SF</div>
+                        <h3 class="text-2xl font-800">sannfe</h3>
+                        <p class="text-zinc-500 text-sm mb-8">Villa Bosch, Argentina</p>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
+                                <span class="block text-2xl font-800" id="stat-count">0</span>
+                                <span class="text-[9px] font-black text-zinc-600 uppercase">Reviews</span>
+                            </div>
+                            <div class="bg-black/40 p-4 rounded-2xl border border-white/5">
+                                <span class="block text-2xl font-800 text-yellow-500" id="stat-avg">0.0</span>
+                                <span class="text-[9px] font-black text-zinc-600 uppercase">Promedio</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="lg:col-span-2">
+                    <h4 class="text-xl font-800 mb-6 tracking-tight">Actividad Reciente</h4>
+                    <div id="review-list" class="space-y-4"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="modal" class="fixed inset-0 bg-black/95 z-[5000] hidden flex items-center justify-center p-6 backdrop-blur-md">
+        <div class="bg-zinc-900 border border-white/10 w-full max-w-md rounded-[2.5rem] p-10">
+            <h3 class="text-2xl font-800 mb-2">Nueva Reseña</h3>
+            <p id="modal-game" class="text-[#E8384D] font-bold text-xs uppercase tracking-widest mb-8"></p>
+            
+            <div class="stars flex gap-3 justify-center mb-8" id="star-box">
+                <span data-v="1">★</span><span data-v="2">★</span><span data-v="3">★</span><span data-v="4">★</span><span data-v="5">★</span>
+            </div>
+
+            <textarea id="modal-text" placeholder="¿Qué te pareció el juego?" 
+                class="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-sm h-32 mb-6 focus:outline-none focus:border-[#E8384D] transition-colors resize-none"></textarea>
+            
+            <button onclick="App.saveReview()" class="w-full btn-primary py-4 rounded-2xl font-800 text-[11px] uppercase tracking-widest">Confirmar Registro</button>
+            <button onclick="UI.modal(false)" class="w-full mt-4 text-zinc-600 text-[10px] font-bold uppercase tracking-widest hover:text-white transition">Cancelar</button>
+        </div>
     </div>
 
-    <div class="field">
-      <label for="whatsapp">WhatsApp (con código de país)</label>
-      <input type="tel" id="whatsapp" placeholder="Ej: +5491112345678" maxlength="20" autocomplete="tel"/>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════
-       PASO 2: ELEGIR FECHA
-  ══════════════════════════════════════════ -->
-  <section class="card">
-    <div class="card-title"><span>📅</span> Elegir fecha</div>
-
-    <div class="date-nav">
-      <button class="btn-nav" id="btn-prev" title="Día anterior">‹</button>
-      <input type="date" id="fecha-picker"/>
-      <button class="btn-nav" id="btn-next" title="Día siguiente">›</button>
-    </div>
-  </section>
-
-  <!-- ══════════════════════════════════════════
-       PASO 3: SLOTS DISPONIBLES
-  ══════════════════════════════════════════ -->
-  <section class="card">
-    <div class="card-title"><span>🕐</span> Horarios disponibles</div>
-
-    <div class="live-indicator">
-      <div class="live-dot loading" id="live-dot"></div>
-      <span id="live-text">Cargando disponibilidad...</span>
+    <div id="terminal" onclick="this.classList.toggle('open')">
+        <span id="term-content"></span>
     </div>
 
-    <div id="slots-container">
-      <!-- Skeletons iniciales -->
-      <div class="skeleton"></div>
-      <div class="skeleton"></div>
-      <div class="skeleton"></div>
-      <div class="skeleton"></div>
-      <div class="skeleton"></div>
-      <div class="skeleton"></div>
-    </div>
+    <script>
+        /**
+         * ROBLOXD V3 - RESILIENT ENGINE
+         * Bypass 403 Forbidden & CORS
+         */
 
-    <div id="alerta-slots" style="display:none; margin-top:14px;"></div>
-  </section>
+        const CONFIG = {
+            PROXIES: [
+                "https://api.allorigins.win/raw?url=",
+                "https://corsproxy.io/?",
+                "https://thingproxy.freeboard.io/fetch/"
+            ],
+            RO_API: "https://games.rotunnel.com/v1",
+            THUMB_API: "https://thumbnails.rotunnel.com/v1",
+            // Datos de reserva si la API falla (Evita el 403 visual)
+            MOCK_DATA: [
+                { id: 15768329004, name: "Blox Fruits", playing: 450200, visits: 32000000000, creator: { name: "Gamer Robot" }, iconUrl: "https://tr.rbxcdn.com/180DAY-707624634f19d9b4b0870f7d549f3e0d/420/420/Image/Webp" },
+                { id: 920587430, name: "Adopt Me!", playing: 120500, visits: 35000000000, creator: { name: "DreamCraft" }, iconUrl: "https://tr.rbxcdn.com/180DAY-0c1737f59d4791e8433d7b37807c4273/420/420/Image/Webp" },
+                { id: 606849621, name: "Jailbreak", playing: 15000, visits: 6000000000, creator: { name: "Badimo" }, iconUrl: "https://tr.rbxcdn.com/180DAY-007d4b248a8553f18579974c20689b09/420/420/Image/Webp" },
+                { id: 2788229976, name: "Brookhaven RP", playing: 380000, visits: 42000000000, creator: { name: "Wolfpaq" }, iconUrl: "https://tr.rbxcdn.com/180DAY-a5676e626e386053308316f066539e6c/420/420/Image/Webp" }
+            ]
+        };
 
-  <!-- ══════════════════════════════════════════
-       PASO 4: CONFIRMAR RESERVA
-  ══════════════════════════════════════════ -->
-  <section class="card">
-    <div class="card-title"><span>✅</span> Confirmar turno</div>
+        let STATE = {
+            games: [],
+            selected: null,
+            rating: 0,
+            reviews: JSON.parse(localStorage.getItem('rbxd_revs') || '[]')
+        };
 
-    <div id="alerta-form" style="display:none; margin-bottom:16px;"></div>
+        const Router = {
+            go(id) {
+                document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+                document.getElementById(`view-${id}`).classList.add('active');
+                if(id === 'profile') UI.drawProfile();
+                window.scrollTo(0,0);
+            }
+        };
 
-    <button class="btn-primary" id="btn-reservar" disabled>
-      Seleccioná un horario para continuar
-    </button>
-  </section>
+        const API = {
+            async fetch(url) {
+                // Rotación de proxies para evadir 403
+                for (let proxy of CONFIG.PROXIES) {
+                    try {
+                        UI.log(`Bypass: Intentando con ${proxy.split('/')[2]}...`);
+                        const res = await fetch(proxy + encodeURIComponent(url));
+                        if (res.ok) {
+                            UI.log("Conexión Exitosa", "success");
+                            return await res.json();
+                        }
+                    } catch (e) { continue; }
+                }
+                throw new Error("API Bloqueada");
+            },
 
-  <!-- ══════════════════════════════════════════
-       RESULTADO: TURNO REGISTRADO
-  ══════════════════════════════════════════ -->
-  <section id="resumen" class="card">
-    <div class="card-title"><span>🎉</span> ¡Turno registrado!</div>
+            async getGames(query = "popular") {
+                UI.skeletons();
+                UI.status("Conectando...", "yellow");
+                
+                try {
+                    const data = await this.fetch(`${CONFIG.RO_API}/games/list?keyword=${query}&maxRows=15`);
+                    const ids = data.games.map(g => g.universeId).join(',');
+                    
+                    const [details, icons] = await Promise.all([
+                        this.fetch(`${CONFIG.RO_API}/games?universeIds=${ids}`),
+                        this.fetch(`${CONFIG.THUMB_API}/games/icons?universeIds=${ids}&size=150x150&format=Png`)
+                    ]);
 
-    <table class="resumen-tabla" id="tabla-resumen">
-      <tr><td>Nombre</td>    <td id="r-nombre">—</td></tr>
-      <tr><td>WhatsApp</td>  <td id="r-wa">—</td></tr>
-      <tr><td>Fecha/Hora</td><td id="r-fecha">—</td></tr>
-      <tr><td>Estado</td>    <td><span class="badge badge-pending">⏳ Pendiente</span></td></tr>
-      <tr><td>ID</td>        <td><code id="r-id" style="font-size:.78rem"></code></td></tr>
-    </table>
+                    STATE.games = details.data.map(g => ({
+                        ...g,
+                        iconUrl: icons.data.find(i => i.targetId === g.universeId)?.imageUrl || ''
+                    }));
 
-    <div class="alert alert-warn">
-      <span class="alert-icon">⚠️</span>
-      <div>
-        Tu turno está <strong>pendiente de confirmación</strong>. Tenés
-        <strong id="ttl-minutos">15</strong> minutos para confirmar por WhatsApp,
-        o el sistema liberará ese horario automáticamente.
-      </div>
-    </div>
+                    UI.drawGrid(STATE.games);
+                    UI.status("RoTunnel Online", "green");
+                } catch (e) {
+                    UI.log("Error 403 / CORS detectado. Activando SafeMode.", "error");
+                    UI.status("Modo Offline", "red");
+                    STATE.games = CONFIG.MOCK_DATA;
+                    UI.drawGrid(STATE.games);
+                }
+            }
+        };
 
-    <a id="btn-whatsapp" href="#" target="_blank" class="wa-btn">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
-        <path d="M12 0C5.373 0 0 5.373 0 12c0 2.119.552 4.11 1.52 5.842L.057 23.943l6.263-1.444A11.944 11.944 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818a9.818 9.818 0 01-5.007-1.371l-.36-.213-3.72.858.886-3.625-.234-.372A9.818 9.818 0 1112 21.818z"/>
-      </svg>
-      Confirmar turno por WhatsApp
-    </a>
+        const UI = {
+            log(m, type = "") {
+                const t = document.getElementById('term-content');
+                const color = type === 'error' ? '#f44' : (type === 'success' ? '#0f0' : '#888');
+                t.innerHTML = `<span style="color:${color}">[${new Date().toLocaleTimeString()}] ${m}</span>`;
+            },
 
-    <button class="btn-primary" id="btn-nuevo"
-      style="background:var(--ink); color:var(--gold); margin-top:12px;">
-      ← Reservar otro turno
-    </button>
-  </section>
+            status(txt, color) {
+                const d = document.getElementById('dot');
+                const t = document.getElementById('status-text');
+                d.className = `w-2 h-2 rounded-full bg-${color}-500 animate-pulse`;
+                t.innerText = txt;
+            },
 
-</main>
+            skeletons() {
+                document.getElementById('grid').innerHTML = Array(10).fill('<div class="h-64 rounded-3xl shimmer"></div>').join('');
+            },
 
-<footer>
-  Desarrollado con Google Apps Script · Los datos se almacenan en Google Sheets.<br/>
-  <a href="#">Políticas de privacidad</a>
-</footer>
+            drawGrid(list) {
+                document.getElementById('grid').innerHTML = list.map(g => `
+                    <div class="game-card flex flex-col cursor-pointer" onclick="App.open(${g.id})">
+                        <img src="${g.iconUrl}" class="w-full aspect-square object-cover rounded-t-[28px]">
+                        <div class="p-6">
+                            <h5 class="font-800 text-[13px] truncate mb-2">${g.name}</h5>
+                            <div class="flex justify-between items-center">
+                                <span class="text-[9px] text-zinc-500 font-black uppercase tracking-widest">${g.creator.name}</span>
+                                <span class="text-green-500 font-bold text-[11px]">${(g.playing/1000).toFixed(1)}k</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            },
 
-<!-- ╔═══════════════════════════════════════════╗ -->
-<!-- ║               JAVASCRIPT                 ║ -->
-<!-- ╚═══════════════════════════════════════════╝ -->
-<script>
-// ── CONFIGURACIÓN ────────────────────────────────────────────
-// ⚠️  REEMPLAZÁ ESTA URL con la de tu Web App publicada en GAS
-const GAS_URL = "https://script.google.com/macros/s/AKfycbwkrzYqHuaONFce5GbIU5gaYd0O9iJIl6qifMasow67bnIvVQuRMssl2v-GOW0IFZ2Q/exec";
+            drawDetail(g) {
+                document.getElementById('detail-container').innerHTML = `
+                    <div class="flex flex-col lg:flex-row gap-16">
+                        <div class="w-full lg:w-80 shrink-0">
+                            <img src="${g.iconUrl}" class="w-full rounded-[3rem] shadow-2xl border border-white/10">
+                            <button onclick="UI.modal(true)" class="w-full mt-8 btn-primary py-5 rounded-2xl font-800 text-[11px] uppercase tracking-widest">Añadir Review</button>
+                            <button onclick="Router.go('home')" class="w-full mt-4 text-zinc-500 text-[10px] font-black uppercase tracking-widest">← Volver</button>
+                        </div>
+                        <div class="flex-1">
+                            <h2 class="text-6xl font-800 tracking-tighter mb-6">${g.name}</h2>
+                            <p class="text-xl text-zinc-400 leading-relaxed mb-10">${g.description || "Descripción no disponible en este momento."}</p>
+                            <div class="flex gap-6">
+                                <div class="bg-zinc-900 p-6 rounded-3xl border border-white/5 flex-1">
+                                    <span class="text-[10px] font-black text-zinc-500 uppercase block mb-1">Activos</span>
+                                    <span class="text-3xl font-800 text-green-500">${g.playing.toLocaleString()}</span>
+                                </div>
+                                <div class="bg-zinc-900 p-6 rounded-3xl border border-white/5 flex-1">
+                                    <span class="text-[10px] font-black text-zinc-500 uppercase block mb-1">Visitas</span>
+                                    <span class="text-3xl font-800">${(g.visits/1000000000).toFixed(1)}B</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            },
 
-// ── ESTADO DE LA APLICACIÓN ──────────────────────────────────
-const state = {
-  fecha:          null,
-  slotSeleccionado: null,
-  cargandoSlots:  false,
-  enviando:       false,
-  config:         null,
-};
+            drawProfile() {
+                const revs = STATE.reviews;
+                document.getElementById('stat-count').innerText = revs.length;
+                document.getElementById('stat-avg').innerText = revs.length ? (revs.reduce((a,b)=>a+b.v,0)/revs.length).toFixed(1) : "0.0";
+                
+                document.getElementById('review-list').innerHTML = revs.map(r => `
+                    <div class="game-card p-6 flex gap-6 items-center">
+                        <img src="${r.img}" class="w-14 h-14 rounded-xl object-cover">
+                        <div class="flex-1">
+                            <div class="flex justify-between">
+                                <h6 class="font-800 text-sm">${r.name}</h6>
+                                <span class="text-yellow-500 text-xs">${'★'.repeat(r.v)}</span>
+                            </div>
+                            <p class="text-zinc-500 text-xs mt-1 italic">"${r.txt}"</p>
+                        </div>
+                    </div>
+                `).join('');
+            },
 
-// ── ELEMENTOS DEL DOM ────────────────────────────────────────
-const fechaPicker      = document.getElementById("fecha-picker");
-const slotsContainer   = document.getElementById("slots-container");
-const btnReservar      = document.getElementById("btn-reservar");
-const btnPrev          = document.getElementById("btn-prev");
-const btnNext          = document.getElementById("btn-next");
-const alertaGlobal     = document.getElementById("alerta-global");
-const alertaSlots      = document.getElementById("alerta-slots");
-const alertaForm       = document.getElementById("alerta-form");
-const liveDot          = document.getElementById("live-dot");
-const liveText         = document.getElementById("live-text");
-const resumenSection   = document.getElementById("resumen");
-const paso1Section     = document.getElementById("paso-1");
+            modal(show) {
+                const m = document.getElementById('modal');
+                if(show) {
+                    document.getElementById('modal-game').innerText = STATE.selected.name;
+                    m.classList.remove('hidden');
+                } else {
+                    m.classList.add('hidden');
+                }
+            }
+        };
 
-// ── INICIALIZACIÓN ────────────────────────────────────────────
-document.addEventListener("DOMContentLoaded", async () => {
-  // Fecha mínima = hoy
-  const hoy = formatFechaLocal(new Date());
-  fechaPicker.min = hoy;
-  fechaPicker.value = hoy;
-  state.fecha = hoy;
+        const App = {
+            init() {
+                API.getGames();
+                this.events();
+            },
 
-  // Cargar config del negocio
-  try {
-    const cfg = await fetchGAS({ action: "getConfig" }, "GET");
-    state.config = cfg;
-    if (cfg.nombre_negocio) {
-      document.getElementById("nombre-negocio").textContent = cfg.nombre_negocio;
-      document.title = `Turnos · ${cfg.nombre_negocio}`;
-    }
-    if (cfg.ttl_minutos) {
-      document.getElementById("ttl-minutos").textContent = cfg.ttl_minutos;
-    }
-  } catch (e) {
-    console.warn("No se pudo cargar config:", e.message);
-  }
+            events() {
+                document.querySelectorAll('#star-box span').forEach(s => {
+                    s.onclick = () => {
+                        const v = parseInt(s.dataset.v);
+                        STATE.rating = v;
+                        document.querySelectorAll('#star-box span').forEach((el, i) => el.classList.toggle('active', i < v));
+                    };
+                });
+            },
 
-  cargarSlots(hoy);
-});
+            search(q) {
+                API.getGames(q);
+            },
 
-// ── EVENTOS ───────────────────────────────────────────────────
-fechaPicker.addEventListener("change", () => {
-  state.fecha = fechaPicker.value;
-  state.slotSeleccionado = null;
-  resetBtnReservar();
-  cargarSlots(state.fecha);
-});
+            open(id) {
+                STATE.selected = STATE.games.find(g => g.id === id);
+                UI.drawDetail(STATE.selected);
+                Router.go('detail');
+            },
 
-btnPrev.addEventListener("click", () => cambiarFecha(-1));
-btnNext.addEventListener("click", () => cambiarFecha(1));
+            saveReview() {
+                if(!STATE.rating) return;
+                const txt = document.getElementById('modal-text').value;
+                STATE.reviews.unshift({
+                    name: STATE.selected.name,
+                    img: STATE.selected.iconUrl,
+                    v: STATE.rating,
+                    txt: txt
+                });
+                localStorage.setItem('rbxd_revs', JSON.stringify(STATE.reviews));
+                UI.modal(false);
+                Router.go('profile');
+            }
+        };
 
-btnReservar.addEventListener("click", handleReservar);
-document.getElementById("btn-nuevo").addEventListener("click", () => {
-  resumenSection.style.display = "none";
-  paso1Section.scrollIntoView({ behavior: "smooth" });
-  state.slotSeleccionado = null;
-  resetBtnReservar();
-});
-
-// ── CARGAR SLOTS DESDE GAS ────────────────────────────────────
-async function cargarSlots(fecha) {
-  if (state.cargandoSlots) return;
-  state.cargandoSlots = true;
-
-  setLiveState("loading", "Verificando disponibilidad...");
-  ocultarAlerta(alertaSlots);
-  mostrarSkeletons();
-
-  try {
-    const data = await fetchGAS({ action: "getSlots", fecha }, "GET");
-
-    if (data.mensaje) {
-      // Día no hábil
-      slotsContainer.innerHTML = "";
-      mostrarAlerta(alertaSlots, "info", "📅", data.mensaje);
-      setLiveState("ok", "Día no disponible");
-      return;
-    }
-
-    renderSlots(data.slots || []);
-    const n = data.totalDisponibles || 0;
-    setLiveState("ok", `${n} horario${n !== 1 ? "s" : ""} disponible${n !== 1 ? "s" : ""}`);
-
-  } catch (err) {
-    slotsContainer.innerHTML = "";
-    mostrarAlerta(alertaSlots, "error", "❌", `Error al cargar horarios: ${err.message}`);
-    setLiveState("error", "Error de conexión");
-  } finally {
-    state.cargandoSlots = false;
-  }
-}
-
-// ── RENDERIZAR SLOTS ──────────────────────────────────────────
-function renderSlots(slots) {
-  slotsContainer.innerHTML = "";
-  ocultarAlerta(alertaSlots);
-
-  if (slots.length === 0) {
-    mostrarAlerta(alertaSlots, "warn", "😕", "No hay horarios disponibles para este día.");
-    return;
-  }
-
-  slots.forEach(slot => {
-    const btn = document.createElement("button");
-    btn.className = "slot-btn";
-    btn.textContent = slot.label;
-    btn.dataset.inicio = slot.inicio;
-    btn.disabled = !slot.disponible;
-    btn.title = slot.disponible ? `Disponible: ${slot.label}` : "Ocupado";
-
-    if (slot.disponible) {
-      btn.addEventListener("click", () => seleccionarSlot(btn, slot));
-    }
-
-    slotsContainer.appendChild(btn);
-  });
-}
-
-// ── SELECCIONAR SLOT ──────────────────────────────────────────
-function seleccionarSlot(btn, slot) {
-  // Deseleccionar anterior
-  document.querySelectorAll(".slot-btn.selected")
-    .forEach(b => b.classList.remove("selected"));
-
-  btn.classList.add("selected");
-  state.slotSeleccionado = slot;
-
-  const hora = slot.label;
-  btnReservar.disabled = false;
-  btnReservar.innerHTML = `Reservar las ${hora}`;
-
-  ocultarAlerta(alertaForm);
-  btnReservar.scrollIntoView({ behavior: "smooth", block: "nearest" });
-}
-
-function resetBtnReservar() {
-  btnReservar.disabled = true;
-  btnReservar.innerHTML = "Seleccioná un horario para continuar";
-}
-
-// ── ENVIAR RESERVA ────────────────────────────────────────────
-async function handleReservar() {
-  if (state.enviando) return;
-
-  const cliente  = document.getElementById("cliente").value.trim();
-  const whatsapp = document.getElementById("whatsapp").value.trim();
-
-  // Validación front-end
-  if (!cliente) {
-    mostrarAlerta(alertaForm, "warn", "⚠️", "Por favor ingresá tu nombre.");
-    document.getElementById("cliente").focus();
-    return;
-  }
-  if (!whatsapp || !/^\+?[0-9]{8,15}$/.test(whatsapp.replace(/\s/g, ""))) {
-    mostrarAlerta(alertaForm, "warn", "⚠️", "Ingresá un WhatsApp válido. Ejemplo: +5491112345678");
-    document.getElementById("whatsapp").focus();
-    return;
-  }
-  if (!state.slotSeleccionado) {
-    mostrarAlerta(alertaForm, "warn", "⚠️", "Seleccioná un horario.");
-    return;
-  }
-
-  state.enviando = true;
-  btnReservar.disabled = true;
-  btnReservar.innerHTML = `<span class="spinner"></span> Reservando...`;
-  ocultarAlerta(alertaForm);
-
-  try {
-    const body = {
-      action:          "reservar",
-      cliente,
-      whatsapp,
-      fechaHoraInicio: state.slotSeleccionado.inicio,
-    };
-
-    const data = await fetchGAS(body, "POST");
-
-    // ── ÉXITO ────────────────────────────────────────────
-    mostrarResumen({
-      nombre:   cliente,
-      whatsapp,
-      inicio:   state.slotSeleccionado.inicio,
-      id:       data.id,
-      waLink:   data.whatsappLink,
-    });
-
-    // Recargar slots para reflejar el nuevo ocupado
-    cargarSlots(state.fecha);
-
-  } catch (err) {
-    // ── ERROR (incluye "turno ya tomado") ────────────────
-    mostrarAlerta(alertaForm, "error", "❌", err.message);
-
-    // Recargamos slots automáticamente para mostrar el estado real
-    await cargarSlots(state.fecha);
-    state.slotSeleccionado = null;
-    resetBtnReservar();
-
-  } finally {
-    state.enviando = false;
-    btnReservar.disabled = false;
-    if (!state.slotSeleccionado) resetBtnReservar();
-  }
-}
-
-// ── MOSTRAR RESUMEN ───────────────────────────────────────────
-function mostrarResumen({ nombre, whatsapp, inicio, id, waLink }) {
-  const fecha = new Date(inicio);
-  const fechaFmt = fecha.toLocaleDateString("es-AR", {
-    weekday: "long", day: "numeric", month: "long"
-  });
-  const horaFmt = fecha.toLocaleTimeString("es-AR", {
-    hour: "2-digit", minute: "2-digit"
-  });
-
-  document.getElementById("r-nombre").textContent = nombre;
-  document.getElementById("r-wa").textContent     = whatsapp;
-  document.getElementById("r-fecha").textContent  = `${fechaFmt} a las ${horaFmt}`;
-  document.getElementById("r-id").textContent     = id;
-  document.getElementById("btn-whatsapp").href    = waLink;
-
-  resumenSection.style.display = "block";
-  resumenSection.scrollIntoView({ behavior: "smooth" });
-}
-
-// ── FETCH HACIA GAS ───────────────────────────────────────────
-async function fetchGAS(params, method = "GET") {
-  let url = GAS_URL;
-  let options = {};
-
-  if (method === "GET") {
-    const qs = Object.entries(params)
-      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-      .join("&");
-    url += "?" + qs;
-    options = { method: "GET" };
-  } else {
-    options = {
-      method: "POST",
-      headers: { "Content-Type": "text/plain" }, // GAS requiere text/plain para evitar CORS preflight
-      body: JSON.stringify(params),
-      redirect: "follow",
-    };
-  }
-
-  const resp = await fetch(url, options);
-  if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
-
-  const json = await resp.json();
-  if (!json.ok) throw new Error(json.error || "Error desconocido del servidor.");
-  return json.data;
-}
-
-// ── HELPERS UI ────────────────────────────────────────────────
-function mostrarSkeletons() {
-  slotsContainer.innerHTML = Array(8)
-    .fill(`<div class="skeleton"></div>`)
-    .join("");
-}
-
-function setLiveState(estado, texto) {
-  liveDot.className = "live-dot";
-  if (estado === "loading") liveDot.classList.add("loading");
-  if (estado === "error")   liveDot.classList.add("error");
-  liveText.textContent = texto;
-}
-
-function mostrarAlerta(el, tipo, icono, msg) {
-  el.innerHTML = `
-    <div class="alert alert-${tipo}">
-      <span class="alert-icon">${icono}</span>
-      <div>${msg}</div>
-    </div>`;
-  el.style.display = "block";
-}
-
-function ocultarAlerta(el) {
-  el.style.display = "none";
-  el.innerHTML = "";
-}
-
-function cambiarFecha(delta) {
-  const [y, m, d] = fechaPicker.value.split("-").map(Number);
-  const nueva     = new Date(y, m - 1, d + delta);
-  const hoy       = new Date();
-  hoy.setHours(0, 0, 0, 0);
-  if (nueva < hoy) return; // No ir al pasado
-  fechaPicker.value = formatFechaLocal(nueva);
-  fechaPicker.dispatchEvent(new Event("change"));
-}
-
-function formatFechaLocal(date) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-</script>
+        App.init();
+    </script>
 </body>
 </html>
